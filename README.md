@@ -16,7 +16,7 @@
 - 기본적으로 python 초급 수준의 지식이 있다고 가정하고, 이를 바탕으로 생물정보학에 대한 내용을 정리하였습니다.
 
 ## Structure
-- 이 저장소는 github classroom을 통해 생성되었기 때문에, github ioㄴ 페이지를 만들지 못했습니다. 
+- 이 저장소는 github classroom을 통해 생성되었기 때문에, github io 페이지를 만들지 못했습니다. 
     - 추후, github io 페이지를 만들어서 이 저장소를 활용할 수 있도록 할 예정입니다.
 - 현재는 각 주제별로 폴더를 만들어서, 해당 주제에 대한 내용을 정리하고 있습니다.
     - [basic](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/notice/basic): 개발환경을 구축하는 부분입니다. conda, docker와 linux 명령어 등에 대한 내용을 정리한 폴더입니다.
