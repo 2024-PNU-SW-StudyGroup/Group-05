@@ -19,10 +19,10 @@
 - 이 저장소는 github classroom을 통해 생성되었기 때문에, github io 페이지를 만들지 못했습니다. 
     - 추후, github io 페이지를 만들어서 이 저장소를 활용할 수 있도록 할 예정입니다.
 - 현재는 각 주제별로 폴더를 만들어서, 해당 주제에 대한 내용을 정리하고 있습니다.
-    - [basic](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/notice/basic): 개발환경을 구축하는 부분입니다. conda, docker와 linux 명령어 등에 대한 내용을 정리한 폴더입니다.
-    - [genomics](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/notice/genomics): 유전체학에 대한 내용을 정리한 폴더입니다.
-    - [single-cell-transcriptomics](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/notice/single-cell-transcriptomics): Single-cell Transcriptomics에 대한 내용을 정리한 폴더입니다.
-    - [spatial-transcriptomics](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/notice/spatial-transcriptomics): Spatial Transcriptomics에 대한 내용을 정리한 폴더입니다.
+    - [basic](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/basic): 개발환경을 구축하는 부분입니다. conda, docker와 linux 명령어 등에 대한 내용을 정리한 폴더입니다.
+    - [genomics](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/genomics): 유전체학에 대한 내용을 정리한 폴더입니다.
+    - [single-cell-transcriptomics](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/single-cell-transcriptomics): Single-cell Transcriptomics에 대한 내용을 정리한 폴더입니다.
+    - [spatial-transcriptomics](https://github.com/2024-PNU-SW-StudyGroup/Group-05/tree/main/spatial-transcriptomics): Spatial Transcriptomics에 대한 내용을 정리한 폴더입니다.
 - 각 폴더에는 해당 주제에 대한 내용을 정리한 md파일과 튜토리얼을 정리한 jupyter notebook 파일이 있습니다.
     - README.md 파일에는 해당 주제에 대한 소개와 참고한 자료들을 정리하였습니다.
         - data는 용량이 큰 파일이 대다수이기 때문에, 각 주제별로 공개된 데이터 링크를 함께 적어두었습니다.
