@@ -1,0 +1,6 @@
+@HD     VN:1.6  SO:coordinate
+@SQ     SN:chr1 LN:248956422
+@RG     ID:S1   SM:sample1    PL:ILLUMINA
+@PG     ID:bwa  PN:bwa-mem2   VN:2.0
+read1   99      chr1    100     60      100M    =       200     200     ATCG...    ####...
+read2   147     chr1    200     60      100M    =       100     -200    GCTA...    ####...
