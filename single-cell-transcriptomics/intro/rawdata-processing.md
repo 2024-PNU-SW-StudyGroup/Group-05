@@ -39,8 +39,6 @@ FASTQ 파일을 얻은 후에는 [`FastQC`](https://www.bioinformatics.babraham.
 - Unique molecule identifier (UMI, 고유 분자 식별자)
 - Raw cDNA sequence (원시 cDNA 시퀀스)
 
-네, 계속해서 번역하겠습니다.
-
 ## 매핑 도구 및 접근법
 
 현재 가장 널리 사용되는 단일세포 RNA-seq 데이터 처리 전용 도구들:
@@ -112,3 +110,149 @@ Droplet 기반 단일세포 분리 시스템의 주요 오류 원인:
 2. Knee/elbow 기반 방법
 3. 사용자가 제공한 예상 세포 수 기반 필터링
 4. 강제된 유효 세포 수 기반 필터링
+
+## UMI Resolution (UMI 해상도)
+
+세포 바코드 보정 후, 보정된 CB 내의 각 유전자의 양을 정량화해야 합니다. PCR 증폭 바이어스로 인해 UMI를 기반으로 리드의 중복을 제거해야 합니다.
+
+### UMI Resolution의 필요성
+
+이상적인 경우:
+- 정확한 UMI가 리드에 태그됨
+- 각 UMI의 리드가 공통 참조 유전자에 고유하게 매핑
+- UMI와 PCR 이전 분자 간 일대일 대응
+
+실제 발생하는 주요 문제:
+1. UMI 오류:
+   - PCR 중 핵산 치환
+   - 시퀀싱 중 리드 오류
+   - 분자 수 추정치 과대 평가 가능성
+
+2. 멀티매핑:
+   - 하나의 UMI의 다른 리드들이 다른 유전자에 매핑
+   - 하나의 리드가 여러 유전자에 매핑
+   - 유전자 기원의 모호성 발생
+
+### 그래프 기반 UMI Resolution
+
+UMI 그래프 G(V,E)의 구성:
+- 노드(V): 리드의 동등성 클래스
+- 엣지(E): 클래스 간 관계
+
+주요 처리 단계:
+1. 노드 정의:
+   - 매핑된 리드와 관련 UMI 기반
+   - 참조 세트와 UMI 태그로 동등성 관계 정의
+
+2. 인접 관계 정의:
+   - UMI 시퀀스 간 거리(해밍 또는 편집 거리) 기반
+   - 참조 세트 내용 고려 가능
+
+3. 그래프 해상도 접근법:
+   - 연결 구성요소 찾기
+   - 그래프 클러스터링
+   - 그리디 노드 병합
+   - 특정 규칙을 따르는 그래프 커버 검색
+
+4. 정량화:
+   - 해상된 UMI 그래프 사용
+   - 각 유전자의 분자 수 계산
+   - 멀티매핑 UMI의 통계적 추론
+   - EM(Expectation-Maximization) 알고리즘 적용 가능
+
+## Count Matrix Quality Control (카운트 매트릭스 품질 관리)
+
+주요 품질 평가 지표:
+- 매핑된 리드의 총 비율
+- 세포당 고유 UMI 분포
+- UMI 중복제거 비율
+- 세포당 검출된 유전자 수
+
+Empty Droplet 검출:
+- Knee/elbow 방식
+- 통계적 모델링 적용
+- 다양한 품질 지표 통합
+
+Doublet 검출:
+- 리드 수와 UMI 수 분포 분석
+- 유전자 발현 프로파일 검토
+- 전문 도구 사용 (예: DoubletFinder, Scrublet 등)
+
+## Count Data Representation (카운트 데이터 표현)
+
+원시 데이터 처리와 품질 관리를 완료한 후에는 세포-유전자 카운트 매트릭스가 원본 샘플의 시퀀싱된 분자의 근사치임을 인지해야 합니다. 주요 고려사항:
+
+- 읽기 매핑의 불완전성
+- 세포 바코드 보정의 한계
+- UMI 해상도의 복잡성
+- 멀티매핑 리드 처리의 어려움
+
+데이터 표현 방식의 옵션:
+1. 비정수 카운트 매트릭스
+   - EM 알고리즘을 통한 확률적 할당
+   - 일부 다운스트림 도구와 호환성 문제 가능
+
+2. Gene Groups 기반 표현
+   - 멀티매핑 정보 유지
+   - 차원: C × E (C: 세포 수, E: 고유 유전자 그룹 수)
+   - 생물학적 해석의 어려움
+
+## 실제 예제 워크플로우
+
+`alevin-fry`를 사용한 실제 데이터 처리 예시:
+
+### 준비 단계:
+```bash
+# conda 환경 생성
+conda create -n af -y -c bioconda simpleaf
+conda activate af
+
+# 작업 디렉토리 생성 및 데이터 다운로드
+mkdir af_xmpl_run && cd af_xmpl_run
+```
+
+### Simpleaf를 이용한 간소화된 파이프라인:
+1. 인덱싱:
+```bash
+simpleaf index \
+-o simpleaf_index \
+-f genome.fa \
+-g genes.gtf \
+-r 90 \
+-t 8
+```
+
+2. 정량화:
+```bash
+simpleaf quant \
+-c 10xv3 -t 8 \
+-1 $reads1 -2 $reads2 \
+-i simpleaf_index/index \
+-u -r cr-like \
+-m simpleaf_index/index/t2g_3col.tsv \
+-o simpleaf_quant
+```
+
+### 결과 분석:
+```python
+import pyroe
+
+# 기본 분석 (스플라이스드 + 모호한 카운트)
+adata_sa = pyroe.load_fry('simpleaf_quant/af_quant')
+
+# 전체 카운트 분석 (U + S + A)
+adata_usa = pyroe.load_fry('simpleaf_quant/af_quant', 
+                          output_format={'X': ['U','S','A']})
+```
+
+## 향후 과제 및 한계점:
+
+1. 실험 규모 증가에 따른 도전과제:
+   - 세포 바코드 시퀀스 다양성 부족
+   - CB 충돌 문제 해결 필요
+   - 더 지능적인 바코드 디자인 필요성
+
+2. 분석 방법론의 개선 필요:
+   - Single-nucleus 실험을 위한 강건한 필터링 방법
+   - UMI 해상도 개선
+   - 멀티매핑 처리 방법 향상
