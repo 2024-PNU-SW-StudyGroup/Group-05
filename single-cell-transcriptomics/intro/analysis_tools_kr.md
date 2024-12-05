@@ -55,3 +55,48 @@ adata = ad.AnnData(
     dtype='int32',
 )
 ```
+
+## 주석 추가하기
+AnnData 객체에 주석을 추가하는 것은 매우 간단합니다. 관측치(세포)나 변수(유전자)에 대한 주석을 추가할 수 있습니다:
+
+```python
+# 관측치에 대한 그룹 정보 추가
+adata.obs['group'] = np.random.choice(['A', 'B', 'C'], size=n_obs)
+
+# 변수에 대한 추가 정보
+adata.var['highly_variable'] = np.random.choice([True, False], size=n_vars)
+```
+
+## 데이터 저장 및 로드
+AnnData 객체는 h5ad 형식으로 저장할 수 있습니다.
+
+```python
+adata.write('my_data.h5ad')
+
+# 데이터 다시 로드하기
+adata = ad.read_h5ad('my_data.h5ad')
+```
+
+# MuData로 다중모달 데이터 저장하기
+최근 단일세포 기술의 발전으로 동일한 세포에서 여러 가지 특성을 동시에 측정할 수 있게 되었습니다. 예를 들어, CITE-seq은 전사체와 단백질 수준을 동시에 측정할 수 있습니다. 이러한 다중모달 데이터를 효율적으로 저장하고 분석하기 위해 MuData가 개발되었습니다.
+MuData는 여러 개의 AnnData 객체를 하나의 컨테이너에 저장합니다. 각 AnnData 객체는 서로 다른 모달리티(예: RNA, ATAC, 단백질 등)를 나타냅니다. 이를 통해 각 모달리티의 데이터를 독립적으로 처리하면서도 모달리티 간의 관계를 분석할 수 있습니다.
+## 설치
+MuData는 다음과 같이 설치할 수 있습니다:
+```bash
+pip install mudata
+```
+## MuData 객체 생성하기
+RNA-seq과 ATAC-seq 데이터를 포함하는 MuData 객체를 만드는 예시를 살펴보겠습니다:
+
+```python
+import mudata as md
+
+# RNA와 ATAC 데이터에 대한 별도의 AnnData 객체 생성
+rna = ad.AnnData(np.random.binomial(100, 0.005, (n_obs, n_vars)))
+atac = ad.AnnData(np.random.binomial(100, 0.005, (n_obs, n_vars)))
+
+# MuData 객체 생성
+mdata = md.MuData({'rna': rna, 'atac': atac})
+```
+
+더 자세한 내용은 muon API 참조 문서(https://muon.readthedocs.io/en/latest/api/index.html)와 muon 튜토리얼(https://muon-tutorials.readthedocs.io/en/latest/)을 참조하시기 바랍니다.
